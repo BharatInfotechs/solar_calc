@@ -686,6 +686,7 @@ window.addEventListener('scroll', () => {
     // Then add the hamburger code at the bottom:
     
     // Mobile menu toggle
+   document.addEventListener('DOMContentLoaded', function() {
     const hamburger = document.getElementById('hamburger');
     const navLinks = document.getElementById('navLinks');
     
@@ -693,12 +694,16 @@ window.addEventListener('scroll', () => {
         hamburger.addEventListener('click', function() {
             navLinks.classList.toggle('active');
             hamburger.classList.toggle('active');
+            document.body.classList.toggle('menu-open'); // Locks scroll
         });
         
         document.querySelectorAll('.nav-item').forEach(link => {
             link.addEventListener('click', () => {
                 navLinks.classList.remove('active');
                 hamburger.classList.remove('active');
+                document.body.classList.remove('menu-open');
             });
         });
     }
+});
+    
