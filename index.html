@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solar-Calc India</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body>
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal active">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-solar-panel"></i> SOLAR-CALC India</h2>
+                <span class="close" onclick="closeLogin()">&times;</span>
+            </div>
+            <div id="loginFormContainer">
+                <form id="signupForm">
+                    <h3>Create Account</h3>
+                    <input type="email" id="signupEmail" placeholder="Email" required>
+                    <input type="password" id="signupPassword" placeholder="Password" required>
+                    <button type="submit">Sign Up</button>
+                </form>
+                <p>Already have account? <a href="#" onclick="switchToLogin()">Login</a></p>
+            </div>
+        </div>
+    </div>
+
+  <nav class="sticky-nav">
+  <div class="nav-container">
+    <div class="logo">SOLAR<span>-CALC</span></div>
+    
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#home" class="nav-item">Home</a></li>
+      <li><a href="#about" class="nav-item">About</a></li>
+      <li><a href="services.html" class="nav-item">Service</a></li>
+      <li><a href="solutions.html" class="nav-item">We Provide</a></li>
+      <li><a href="#partners" class="nav-item">Partners</a></li>
+      <li><button id="logoutBtn" onclick="logout()">Logout</button></li>
+    </ul>
+  </div>
+</nav>
+
+       <!-- Hero Banner -->
+        <section class="hero">
+            <div class="hero-bg">
+                <div class="tiranga-overlay"></div>
+            </div>
+            <div class="hero-content">
+                <h1>Solar Calculator<br>for Every Indian Location</h1>
+                <p>28 States • 8 UTs • 766 Districts • 600,000+ Villages</p>
+            </div>
+        </section>
+<!-- About Section -->
+<section id="about" class="about-section">
+  <div class="container about-wrapper">
+    <div class="about-text">
+      <h2>About Us</h2>
+      <p>
+        Welcome to our platform, where innovation meets simplicity. Our journey began with a simple idea: 
+        to create digital experiences that are not just functional, but truly meaningful. Over the years, 
+        we’ve grown from a small team of passionate creators into a full-scale development hub dedicated 
+        to building solutions that make a difference. We believe that great design and robust technology 
+        should work hand in hand to solve real-world problems. 
+      </p>
+      <p>
+        Our team brings together diverse skills in web development, UI/UX design, and digital strategy. 
+        We collaborate closely with our clients to understand their vision and transform it into reality. 
+        Whether it’s crafting a responsive website, building a custom admin dashboard, or optimizing 
+        performance for scale, we approach each challenge with creativity and precision. 
+      </p>
+    </div>
+    <div class="about-images">
+      <div class="image-card">
+        <img src="image/solar-2.png" alt="Our Team Working" />
+      </div>
+      <div class="image-card">
+        <img src="image/solar-1.avif" alt="Office Collaboration" />
+      </div>
+      <div class="image-card">
+        <img src="image/solar-3.jpg" alt="Design Process" />
+      </div>
+    </div>
+  </div>
+</section>
+
+
+ 
+
+        
+
+        <!-- Location Section -->
+       <section id="location" class="location-section">
+    <div class="container">
+        <h2>Select Your Location</h2>
+        <div class="location-inputs">
+            <div class="input-group">
+                <label>State</label>
+                <input type="text" id="state" value="Auto detected" readonly>
+            </div>
+            <div class="input-group">
+                <label>District</label>
+                <input type="text" id="district" value="Auto detected" readonly>
+            </div>
+            <div class="input-group">
+                <label>City / Village</label>
+                <input type="text" id="city" value="Auto detected" readonly>
+            </div>
+            <div class="input-group">
+                <label>PIN Code</label>
+                <input type="text" id="pincode" value="Auto detected" readonly>
+            </div>
+        </div>
+        <button class="btn-primary" onclick="getCurrentLocation()">
+            <i class="fas fa-location-arrow"></i> Use My Current Location
+        </button>
+        <div id="map" class="map-container"></div>
+    </div>
+</section>
+
+
+<!-- Customer Details Section - MANDATORY -->
+<section id="customerDetails" class="customer-section">
+    <div class="container">
+        <h2><i class="fas fa-user-edit"></i> Customer Details <span style="color: red;">*</span></h2>
+        <p style="text-align: center; color: #666; margin-bottom: 20px;">Please fill these details before calculating</p>
+        <form id="customerForm">
+            <div class="input-grid">
+                <div class="input-group">
+                    <label>Full Name <span style="color: red;">*</span></label>
+                    <input type="text" id="customerName" placeholder="Enter your name" required>
+                </div>
+                <div class="input-group">
+                    <label>Mobile Number <span style="color: red;">*</span></label>
+                    <input type="tel" id="customerMobile" placeholder="10-digit mobile" pattern="[0-9]{10}" required>
+                </div>
+                <div class="input-group full-width">
+                    <label>Full Address <span style="color: red;">*</span></label>
+                    <textarea id="customerAddress" placeholder="House No, Street, Area, City" rows="3" required></textarea>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+
+<!-- Calculator Section - Remove 'hidden' class -->
+<section id="calculator" class="calculator-section">
+    <!-- your existing calculator code stays here -->
+</section>
+
+
+
+<!-- Calculator Section -->
+<section id="calculator" class="calculator-section">
+    <div class="container">
+        <h2>Solar Calculator</h2>
+        <form id="solarForm">
+            <div class="input-grid">
+                <div class="input-group">
+                    <label>Roof Area (sq.m) *</label>
+                    <input type="number" id="roofArea" min="10" required>
+                </div>
+                <div class="input-group">
+                    <label>Monthly Units Used (kWh)</label>
+                    <input type="number" id="monthlyUnits" min="1" required>
+                </div>
+                <div class="input-group">
+                    <label>Rate per Unit (₹)</label>
+                    <input type="number" id="ratePerUnit" step="0.1" min="0" value="7.5" required>
+                </div>
+                <div class="input-group">
+                    <label>Budget (₹)</label>
+                    <input type="number" id="budget" min="0" required>
+                </div>
+            </div>
+            <button type="submit" class="btn-primary large">Calculate Savings</button>
+        </form>
+
+        <div id="results" class="results hidden">
+            <div class="results-grid">
+                <div class="result-card">
+                    <h3>₹<span id="currentMonthlyBill">0</span></h3>
+                    <p>Current Monthly Bill</p>
+                </div>
+                <div class="result-card">
+                    <h3><span id="monthlySavings">0</span> ₹</h3>
+                    <p>Monthly Savings</p>
+                </div>
+                <div class="result-card">
+                    <h3><span id="yearlySavings">0</span> ₹</h3>
+                    <p>Yearly Savings</p>
+                </div>
+                <div class="result-card">
+                    <h3 id="roi">0</h3>
+                    <p>ROI (%)</p>
+                </div>
+                <div class="result-card">
+                    <h3><span id="kwNeeded">0</span> kW</h3>
+                    <p>Solar Capacity Needed</p>
+                </div>
+                <div class="result-card">
+                    <h3>₹<span id="subsidy">0</span></h3>
+                    <p>Total Subsidy (Central + UP)</p>
+                </div>
+            </div>
+            <div class="action-buttons">
+                <button onclick="downloadPDF()" class="btn-primary">
+                    <i class="fas fa-download"></i> Download Report
+                </button>
+                <button onclick="printReport()" class="btn-secondary">
+                    <i class="fas fa-print"></i> Print Report
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+
+                <div id="results" class="results hidden">
+                    <div class="results-grid">
+                        <div class="result-card">
+                            <h3>₹<span id="currentMonthlyBill">0</span></h3>
+                            <p>Current Monthly Bill</p>
+                        </div>
+                        <div class="result-card">
+                            <h3><span id="monthlySavings">0</span> ₹</h3>
+                            <p>Monthly Savings</p>
+                        </div>
+                        <div class="result-card">
+                            <h3><span id="yearlySavings">0</span> ₹</h3>
+                            <p>Yearly Savings</p>
+                        </div>
+                        <div class="result-card">
+                            <h3 id="roi">0</h3>
+                            <p>ROI (%)</p>
+                        </div>
+                        <div class="result-card">
+                            <h3><span id="kwNeeded">0</span> kW</h3>
+                            <p>Solar Capacity Needed</p>
+                        </div>
+                        <div class="result-card">
+                            <h3>₹<span id="subsidy">0</span></h3>
+                            <p>PM Surya Ghar Subsidy</p>
+                        </div>
+                    </div>
+                    <div class="action-buttons">
+                        <button onclick="downloadPDF()" class="btn-primary">
+                            <i class="fas fa-download"></i> Download Report
+                        </button>
+                        <button onclick="printReport()" class="btn-secondary">
+                            <i class="fas fa-print"></i> Print Report
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Chart Section -->
+        <section id="chart" class="chart-section hidden">
+            <div class="container">
+                <canvas id="savingsChart"></canvas>
+            </div>
+        </section>
+
+
+        <div style="text-align: center; margin-top: 30px;">
+    <button class="whatsapp-btn" onclick="sendWhatsAppReport()">
+        <i class="fab fa-whatsapp"></i> Send Report on WhatsApp
+    </button>
+</div>
+
+        <!-- Team Section -->
+        <section id="team" class="team-section">
+            <div class="container">
+                <h2>Our Team</h2>
+                <div class="team-grid">
+                    <div class="team-card">
+                        <img src="image/ANAND.jpeg" alt="Anand Srivastava">
+                        <h3>Anand Srivastava</h3>
+                        <p class="role">Full Stack Developer</p>
+                        <p>Handled APIs, database, and authentication.</p>
+                        <div class="social-links">
+                            <a href="#"><i class="fab fa-linkedin"></i></a>
+                            <a href="#"><i class="fab fa-github"></i></a>
+                        </div>
+                    </div>
+                    <div class="team-card">
+                        <img src="image/LEO.jpeg" alt="Leo Swing">
+                        <h3>Leo Swing</h3>
+                        <p class="role">Flutter Developer</p>
+                        <p>Worked on UI and mobile app development.</p>
+                        <div class="social-links">
+                            <a href="#"><i class="fab fa-linkedin"></i></a>
+                            <a href="#"><i class="fab fa-github"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+       <!-- Footer -->
+<footer class="site-footer">
+  <div class="container footer-wrapper">
+    <div class="footer-col">
+      <h3>Solar-Calc</h3>
+      <p>Building digital experiences that matter. Crafted with code, coffee, and collaboration.</p>
+      <div class="social-links">
+        <a href="#" aria-label="Instagram">IG</a>
+        <a href="#" aria-label="LinkedIn">LI</a>
+        <a href="#" aria-label="GitHub">GH</a>
+      </div>
+    </div>
+
+    <div class="footer-col">
+      <h4>Contact Us</h4>
+      <ul class="contact-list">
+        <li>
+          <strong>Address:</strong><br>
+          Sector 14,Chandanpur Colony,Indira Nagar, Lucknow,<br>
+          Uttar Pradesh 226010
+        </li>
+        <li>
+          <strong>Phone:</strong><br>
+          <a href="tel:+918737803038">+91 87378 03038</a>
+        </li>
+        <li>
+          <strong>Email:</strong><br>
+          <a href="mailto:hello@yourcompany.com">hello@yourcompany.com</a>
+        </li>
+      </ul>
+    </div>
+
+    <div class="footer-col">
+      <h4>Quick Links</h4>
+      <ul class="footer-links">
+        <li><a href="#home">Home</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#services">Services</a></li>
+        <li><a href="#contact">Contact</a></li>
+        <li><a href="admin.html">Admin</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <p>&copy;       SOLAR-CALC. All rights reserved.</p>
+    <p class="credits">Designed & Developed by <span>BHARATINFOTECHS</span></p>
+  </div>
+</footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="script.js"></script>
+</body>
+
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<div class="loading-overlay" id="loadingOverlay"><div class="spinner"></div></div>
+
+</html>
