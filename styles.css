@@ -1453,3 +1453,21 @@ body {
     grid-template-columns: 1fr !important;
   }
 }
+
+/* FIX: Kill the 1400px width causing zoom-out */
+@media (max-width: 992px) {
+  .nav-container {
+    max-width: 100% !important;
+    width: 100% !important;
+    padding: 0 15px !important;
+  }
+  
+  html, body {
+    width: 100% !important;
+    overflow-x: hidden !important;
+  }
+  
+    * {
+    box-sizing: border-box !important;
+  }
+}
